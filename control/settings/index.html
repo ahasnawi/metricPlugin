@@ -3,6 +3,8 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <link href="../../../../styles/helper.css" rel="stylesheet">
+
     <!-- build:bundleControlBFMinJS  -->
 	<script src="../../../../scripts/buildfire.js"></script>
     <!-- endbuild -->
@@ -55,6 +57,11 @@
 			settings.prop3 = prop3.checked ;
 			settings.save();
         }
+
+        buildfire.auth.showTagsSearchDialog({},(error, tags)=>{ 
+            
+        });
+
 
     </script>
 </body>
