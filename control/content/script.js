@@ -12,7 +12,7 @@ class Metric {
     this.action_item = data.action_item || {};
     this.type = data.type || "";
     this.parent_id = data.parent_id || "";
-    this.history = [{ date: new Date(), value: data.value || 0 }];
+    this.history = [new History({ value: data.value || 0 })];
     this.createdOn = data.createdOn || null;
     this.createdBy = data.createdBy || null;
     this.lastUpdatedOn = data.lastUpdatedOn || null;
@@ -96,16 +96,19 @@ class Metric {
         });
       });
     } else {
+      // Give buildfire index with the generated date
+      // find it in the database and update it 2020/8/9
+      // if didn't find it push a new value
       return new Promise((resolve, reject) => {
         buildfire.publicData.getById(metric.id, "metrics", (err, data) => {
           if (err) reject(err);
           else {
-            const currentDate = Helpers.getCurrentDate();
+            const currentDate = Helpers.formatDate();
             // Get the last updated date
             let lastUpdatedDate = data.history[data.history.length - 1].date;
 
             // Check if it equels the current date
-            if (Helpers.getCurrentDate(lastUpdatedDate) === currentDate) {
+            if (Helpers.formatDate(lastUpdatedDate) === currentDate) {
               // If it does, change the value to the new value
               data.history[data.history.length - 1].value = metric.value;
             } else {
@@ -151,3 +154,14 @@ const me = new Metric({
   type: "metric",
   parent_id: "asdaf",
 });
+
+class History {
+  constructor(data = {}) {
+    this.value = data.value;
+    this.date = new Date();
+    this.createdOn = data.createdOn || null;
+    this.createdBy = data.createdBy || null;
+    this.lastUpdatedOn = data.lastUpdatedOn || null;
+    this.lastUpdatedBy = data.lastUpdatedBy || null;
+  }
+}
