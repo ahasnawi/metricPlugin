@@ -9,8 +9,13 @@ class Metric {
     this.action_item = data.action_item || {};
     this.type = data.type || "";
     this.parent_id = data.parent_id || "";
-    this.createdOn = data.createdOn || new Date();
     this.history = [{ date: new Date(), value: data.value || 0 }];
+    this.createdOn = data.createdOn || null;
+    this.createdBy = data.createdBy || null;
+    this.lastUpdatedOn = data.lastUpdatedOn || null;
+    this.lastUpdatedBy = data.lastUpdatedBy || null;
+    this.deletedBy = data.deletedBy || null;
+    this.deletedOn = data.deletedOn || null;
   }
 
   // A helper function to extract the date
@@ -29,9 +34,17 @@ class Metric {
   }
 
   getRowData() {
-    let data = {};
+    let data = {
+      createdOn: this.createdOn,
+      createdBy: this.createdBy,
+      lastUpdatedOn: this.lastUpdatedOn,
+      lastUpdatedBy: this.lastUpdatedBy,
+      deletedOn: this.deletedOn,
+      deletedBy: this.deletedBy,
+    };
     if (this.type === "metric") {
       data = {
+        ...data,
         title: this.title,
         icon: this.icon,
         min: this.min,
@@ -127,6 +140,7 @@ class Metric {
     });
   }
 }
+
 const me = new Metric({
   title: "gdtr",
   icon: "dfhgfjj",
@@ -137,28 +151,3 @@ const me = new Metric({
   type: "metric",
   parent_id: "asdaf",
 });
-
-me.updateMetric().then((data) => {
-  console.log("Update data", data);
-});
-Metric.getMatrics().then((data) => {
-  console.log(data);
-});
-
-// me.save()
-//   .then((data) => {
-//     console.log("Saved Data", data);
-
-//     Metric.getMatrics().then(data => {
-//       console.log("data", data)
-//     })
-//   })
-//   .catch((err) => console.log(err));
-
-// setTimeout(() => {
-//   Metric.getMatrics()
-//     .then((data) => {
-//       console.log("Retrived Data", data);
-//     })
-//     .catch((err) => console.log(err));
-// }, 3000);
