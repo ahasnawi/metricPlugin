@@ -1,3 +1,6 @@
+// Get helper functions
+const Helpers = helpers;
+
 class Metric {
   constructor(data = {}) {
     this.id = data.id || "";
@@ -16,12 +19,6 @@ class Metric {
     this.lastUpdatedBy = data.lastUpdatedBy || null;
     this.deletedBy = data.deletedBy || null;
     this.deletedOn = data.deletedOn || null;
-  }
-
-  // A helper function to extract the date
-  static getCurrentDate(date = new Date()) {
-    date = new Date(date);
-    return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
   }
 
   static getMatrics() {
@@ -78,6 +75,7 @@ class Metric {
 
   save() {
     let metric = this.getRowData();
+    metric.createdOn = new Date();
     return new Promise((resolve, reject) => {
       buildfire.publicData.insert(metric, "metrics", (err, data) => {
         if (err) reject(err);
@@ -85,9 +83,11 @@ class Metric {
       });
     });
   }
-  updateMetric() {
+  update() {
     let metric = this.getRowData();
+    metric.lastUpdatedOn = new Date();
 
+    // Parent, it doesn't have a value or history;
     if (this.type === "parent") {
       return new Promise((resolve, reject) => {
         buildfire.publicData.update(this.id, metric, "metrics", (err, data) => {
@@ -100,12 +100,12 @@ class Metric {
         buildfire.publicData.getById(metric.id, "metrics", (err, data) => {
           if (err) reject(err);
           else {
-            const currentDate = Metric.getCurrentDate();
+            const currentDate = Helpers.getCurrentDate();
             // Get the last updated date
             let lastUpdatedDate = data.history[data.history.length - 1].date;
 
             // Check if it equels the current date
-            if (Metric.getCurrentDate(lastUpdatedDate) === currentDate) {
+            if (Helpers.getCurrentDate(lastUpdatedDate) === currentDate) {
               // If it does, change the value to the new value
               data.history[data.history.length - 1].value = metric.value;
             } else {

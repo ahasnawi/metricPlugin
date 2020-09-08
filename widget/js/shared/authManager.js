@@ -1,34 +1,24 @@
 const authManager = {
-  _currentUser: null,
-  get currentUser() {
-    return authManager._currentUser;
-  },
-  set currentUser(user) {
-    authManager._currentUser = user;
-    authManager.onUserChange(user);
-  },
-
-  enforceLogin() {
-    buildfire.auth.getCurrentUser((err, user) => {
-      if (!user) {
-        buildfire.auth.login({ allowCancel: false }, (err, user) => {
-          if (!user) authManager.enforceLogin();
-          else authManager.currentUser = user;
-        });
-      } else authManager.currentUser = user;
+  getCurrentUser: () => {
+    return new Promise((resolve, reject) => {
+      buildfire.auth.getCurrentUser((err, user) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(user);
+        }
+      });
     });
   },
-
-  onUserChange(user) {
-    console.warn("You must handle on user changed");
+  login: () => {
+    return new Promise((resolve, reject) => {
+      buildfire.auth.login({ allowCancel: true }, (err, user) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(user);
+        }
+      });
+    });
   },
 };
-buildfire.auth.onLogout(() => {
-  window.buildfire.history.get({}, (e, b) => {
-    b.forEach(() => {
-      history.pop();
-    });
-  });
-  enforceLogin();
-  //   window.location.reload();
-});

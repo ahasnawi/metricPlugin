@@ -1,2 +1,3 @@
-authManager.enforceLogin();
-console.log('authManager.currentUser', authManager.currentUser);
+authManager.getCurrentUser().then(user => {
+    console.log("authManager.currentUser", user);
+});
