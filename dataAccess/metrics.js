@@ -8,6 +8,7 @@ function getMetrics() {
         if (!data.data.metrics) {
           initializeParentObject().then((result) => {
             resolve(result);
+            metrics = result;
           });
         }
         metrics = data;
@@ -36,18 +37,44 @@ function save(metric) {
 
 function update() {
   return new Promise((resolve, reject) => {
-    buildfire.publicData.update(this.id, metric, "metrics", (err, data) => {
-      if (err) reject(err);
-      else resolve(data);
-    });
+    buildfire.publicData.update(
+      metrics.id,
+      { $set: { [`${metric.pointer}.${metric.id}`]: metric } },
+      "metrics",
+      (err, data) => {
+        if (err) reject(err);
+        else resolve(data);
+      }
+    );
   });
 }
 
 function deleteMetric() {
   return new Promise((resolve, reject) => {
-    buildfire.publicData.delete(this.id, "metrics", (err, data) => {
+    buildfire.publicData.update(
+      metrics.id,
+      {
+        $unset: {
+          [`${metric.pointer}.${metric.id}`]: "",
+        },
+      },
+      "metrics",
+      (err, data) => {
+        if (err) reject(err);
+        else resolve(data);
+      }
+    );
+  });
+}
+
+function initializeParentObject() {
+  return new Promise((resolve, reject) => {
+    buildfire.publicData.save({ metrics: {} }, "metrics", (err, data) => {
       if (err) reject(err);
-      else resolve(data);
+      else {
+        resolve(data);
+        metrics = { metrics: {} };
+      }
     });
   });
 }
@@ -63,23 +90,18 @@ const metric = new Metric({
   type: "metric",
 });
 
-function initializeParentObject() {
-  return new Promise((resolve, reject) => {
-    buildfire.publicData.save({ metrics: {} }, "metrics", (err, data) => {
-      if (err) reject(err);
-      else {
-        resolve(data);
-        metrics = { metrics: {} };
-      }
+getMetrics().then((data) => {
+  // save(metric).then((res) => {
+  //   console.log("Saved Data", res);
+  // });
+  deleteMetric().then(() => {
+    getMetrics().then((data) => {
+      // save(metric).then((res) => {
+      //   console.log("Saved Data", res);
+      // });
+      console.log("ALL DATA", data);
     });
   });
-}
-
-getMetrics().then((data) => {
-  save(metric).then((res) => {
-    console.log("Saved Data", res);
-  });
-  console.log("ALL DATA", data);
 });
 
 // save(metric)
