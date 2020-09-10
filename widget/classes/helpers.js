@@ -1,12 +1,4 @@
 class Helper {
-  static get PRIVACY() {
-    return {
-      PUBLIC: "public",
-      PRIVATE: "private",
-      BOTH: "both",
-    };
-  }
-
   static get EVENTS() {
     return {
       METRIC_CRETAED: "METRIC_CRETAED",
