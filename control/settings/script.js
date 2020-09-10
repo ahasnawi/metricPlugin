@@ -1,24 +1,13 @@
-class Tag {
+class Settings {
     constructor(data = {}) {
-        this.id = data.id;
-        this.tagName = data.tagName;
-        this.username = data.username;
-        this.email = data.email;
+        this.tags = data.tags || [];
+        this.sortBy = data.sortBy || '';
+        this.showSummary = data.showSummary || true;
     }
 
-    getRowData() {
-        let tag = {
-          id: this.id,
-          tagName: this.tagName,
-          username: this.username,
-          email: this.email,
-        };
-        return tag;
-    }
-
-    static getTags() {
+    static get() {
         return new Promise((resolve, reject) => {
-          buildfire.dataStore.search({}, "tags", (err, data) => {
+          buildfire.dataStore.get("settings", (err, data) => {
             if (err) reject(err);
             else resolve(data);
           });
@@ -26,28 +15,13 @@ class Tag {
     }
 
     save() {
-        let tag = this.getRowData();
+        let settings = {
+            tags : this.tags,
+            sortBy: this.sortBy,
+            showSummary: this.showSummary
+        }
         return new Promise((resolve, reject) => {
-            buildfire.dataStore.insert(tag, "tags", (err, data) => {
-              if (err) reject(err);
-              else resolve(data);
-            });
-        });
-    }
-
-    update() {
-        let tag = this.getRowData();
-        return new Promise((resolve, reject) => {
-            buildfire.dataStore.update(this.id, tag, "tags", (err, data) => {
-              if (err) reject(err);
-              else resolve(data);
-            });
-        });
-    }
-
-    delete() {
-        return new Promise((resolve, reject) => {
-            buildfire.dataStore.delete(this.id, "tags", (err, data) => {
+            buildfire.dataStore.save(settings, "settings", (err, data) => {
               if (err) reject(err);
               else resolve(data);
             });
