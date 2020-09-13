@@ -25,26 +25,22 @@ class Metric {
     this.lastUpdatedBy = data.lastUpdatedBy || null;
   }
 
-  getHistory() {
-    const data = {
-      metrics: {
-        met1: { history: [] },
-        met2: { history: [] },
-        mat3: {
-          metrics: {
-            met1: { history: [] },
-            met2: { history: [] },
-          },
-        },
-      },
-    };
-
-    for (let key in data.metrics) {
-      if (metrics[key].type === "metric") {
-        metrics[key].value =
-          metrics[key].history[metrics[key].history.length - 1];
-      } else {
-        // do recurrsion
+  getValue(metric) {
+    if (metric.type === "metric") {
+      let val = metric.history[metric.history.length - 1].value;
+      metric.value = val;
+      return val;
+    } else if (metric.type === "parent") {
+      if (metric.metrics) {
+        let sum = 0;
+        for (let key in metric.metrics) {
+          sum += getHistory(metric.metrics[key]);
+          console.log("sum", sum);
+        }
+        let avg = sum / Object.keys(metric.metrics).length;
+        console.log("avg", avg);
+        metric.value = avg;
+        return avg;
       }
     }
   }
