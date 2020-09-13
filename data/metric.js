@@ -24,8 +24,16 @@ class Metric {
     this.lastUpdatedOn = data.lastUpdatedOn || null;
     this.lastUpdatedBy = data.lastUpdatedBy || null;
   }
-
   getHistory() {}
-
-  addHistory() {}
+  addHistory(value) {
+    const historyPointer = `${this.pointer}.${this.id}.history`;
+    addMetricHistory(historyPointer, value)
+      .then(() => {
+        // TODO: check if this step is needed
+        this.value = value;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 }

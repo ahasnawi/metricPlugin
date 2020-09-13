@@ -1,118 +1,148 @@
-let metrics = {};
+class MetricsDAO {
+  constructor() {
+    this.metrics = {};
+  }
 
-function getMetrics() {
-  return new Promise((resolve, reject) => {
-    buildfire.publicData.get("metrics", (err, data) => {
-      if (err) reject(err);
-      else {
-        if (!data.data.metrics) {
-          initializeParentObject().then((result) => {
-            resolve(result);
-            metrics = result;
-          });
+  static getMetrics() {
+    return new Promise((resolve, reject) => {
+      buildfire.publicData.get("metrics", (err, data) => {
+        if (err) reject(err);
+        else {
+          // Check if there is already objects in the database
+          if (!data.data.metrics) {
+            // If there is no object, then create the parent object
+            buildfire.publicData.save(
+              { metrics: {} },
+              "metrics",
+              (err, result) => {
+                if (err) reject(err);
+                else {
+                  MetricsDAO.getMetrics();
+                  resolve(result);
+                }
+              }
+            );
+          } else {
+            this.metrics = data;
+            resolve(data);
+          }
         }
-        metrics = data;
-        resolve(data);
-      }
+      });
     });
-  });
-}
+  }
 
-function save(metric) {
-  metric.createdOn = new Date();
-  metric.lastUpdatedOn = new Date();
+  static save(metric) {
+    metric.createdOn = new Date();
+    metric.lastUpdatedOn = new Date();
 
-  return new Promise((resolve, reject) => {
-    buildfire.publicData.update(
-      metrics.id,
-      { $set: { [`${metric.pointer}.${metric.id}`]: metric } },
-      "metrics",
-      (err, data) => {
-        if (err) reject(err);
-        else resolve(data);
-      }
-    );
-  });
-}
+    return new Promise((resolve, reject) => {
+      buildfire.publicData.update(
+        this.metrics.id,
+        { $set: { [`${metric.pointer}.${metric.id}`]: metric } },
+        "metrics",
+        (err, data) => {
+          if (err) reject(err);
+          else resolve(data);
+        }
+      );
+    });
+  }
 
-function update() {
-  return new Promise((resolve, reject) => {
-    buildfire.publicData.update(
-      metrics.id,
-      { $set: { [`${metric.pointer}.${metric.id}`]: metric } },
-      "metrics",
-      (err, data) => {
-        if (err) reject(err);
-        else resolve(data);
-      }
-    );
-  });
-}
+  static update(updateObject) {
+    return new Promise((resolve, reject) => {
+      buildfire.publicData.update(
+        this.metrics.id,
+        { $set: updateObject },
+        "metrics",
+        (err, data) => {
+          if (err) reject(err);
+          else resolve(data);
+        }
+      );
+    });
+  }
 
-function deleteMetric() {
-  return new Promise((resolve, reject) => {
-    buildfire.publicData.update(
-      metrics.id,
-      {
-        $unset: {
-          [`${metric.pointer}.${metric.id}`]: "",
+  static delete(metric) {
+    return new Promise((resolve, reject) => {
+      buildfire.publicData.update(
+        this.metrics.id,
+        {
+          $unset: {
+            [`${metric.pointer}.${metric.id}`]: "",
+          },
         },
-      },
-      "metrics",
-      (err, data) => {
-        if (err) reject(err);
-        else resolve(data);
-      }
-    );
-  });
+        "metrics",
+        (err, data) => {
+          if (err) reject(err);
+          else resolve(data);
+        }
+      );
+    });
+  }
 }
 
-function initializeParentObject() {
-  return new Promise((resolve, reject) => {
-    buildfire.publicData.save({ metrics: {} }, "metrics", (err, data) => {
-      if (err) reject(err);
-      else {
-        resolve(data);
-        metrics = { metrics: {} };
-      }
-    });
-  });
-}
+// let newMetric = new Metrics();
 
 const metric = new Metric({
-  title: "child2",
-  icon: "child2",
-  pointer: "metrics.5f5aa18e29d8c57a4b0d38e9.metrics",
-  min: 100,
-  max: 0,
-  value: 50,
+  id: "5f5e38f564fb6d379babba90",
+  title: "tyu",
+  icon: "tyu",
+  pointer: "metrics.5f5e33894cd39ab4948c4914.metrics",
+  min: 45,
+  max: 87,
+  value: 78,
   action_item: {},
-  type: "metric",
+  type: "parent",
 });
 
-getMetrics().then((data) => {
-  // save(metric).then((res) => {
-  //   console.log("Saved Data", res);
-  // });
-  deleteMetric().then(() => {
-    getMetrics().then((data) => {
-      // save(metric).then((res) => {
-      //   console.log("Saved Data", res);
-      // });
-      console.log("ALL DATA", data);
-    });
-  });
-});
-
-// save(metric)
-//   .then((data) => {
-//     console.log("data", data);
-//   })
-//   .catch((err) => {
-//     console.log("err", err);
-//   })
-//   .finally(() => {
-//     getMetrics().then((data) => {
-//       console.log("All metrics", data);
+// Metrics.getMetrics().then((data) => {
+//   // save(metric).then((res) => {
+//   //   console.log("Saved Data", res);
+//   // });
+//   // deleteMetric().then(() => {
+//   //   getMetrics().then((data) => {
+//   console.log("ALL DATA after Delete", data);
+//   //   });
+//   // });
+// });
+// setTimeout(() => {
+//   newMetric
+//     .save(metric)
+//     .then((data) => {
+//       console.log("data", data);
+//     })
+//     .catch((err) => {
+//       console.log("err", err);
+//     })
+//     .finally(() => {
+//       newMetric.getMetrics().then((data) => {
+//         console.log("All metrics", data);
+//       });
 //     });
+// }, 5000);
+
+// function deleteMet() {
+//   return new Promise((resolve, reject) => {
+//     buildfire.publicData.delete(
+//       "5f5d511072fd48066a24fd8a",
+//       "metrics",
+//       (err, data) => {
+//         if (err) reject(err);
+//         else resolve(data);
+//       }
+//     );
 //   });
+// }
+
+// deleteMet().then((data) => {
+//   console.log("DATA DELETED", data);
+// });
+
+MetricsDAO.getMetrics().then((data) => {
+  // newMetric.update(metric, "value").then(() => {
+  //   newMetric.getMetrics().then((data) => {
+  //     console.log("ALL DATA after Delete", data);
+  //   });
+  // });
+  console.log("ALL DATA", data);
+});
