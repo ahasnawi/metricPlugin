@@ -16,10 +16,7 @@ class Helper {
   }
 
   static uuidv4() {
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
-      var r = (Math.random() * 16) | 0,
-        v = c == "x" ? r : (r & 0x3) | 0x8;
-      return v.toString(16);
-    });
+    return (m = Math, d = Date, h = 16, s = (s) => m.floor(s).toString(h)) =>
+      s(d.now() / 1000) + " ".repeat(h).replace(/./g, () => s(m.random() * h));
   }
 }

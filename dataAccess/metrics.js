@@ -79,9 +79,17 @@ class MetricsDAO {
       );
     });
   }
-}
 
-// let newMetric = new Metrics();
+  static addMetricHistory(pointer, value) {
+    const currentDate = helpers.getAbsoluteDate();
+    return new Promise((resolve, reject) => {
+
+    console.log("pointer", pointer);
+    console.log("value", value);
+      resolve(true)
+    })
+  }
+}
 
 const metric = new Metric({
   id: "5f5e38f564fb6d379babba90",
@@ -93,50 +101,16 @@ const metric = new Metric({
   value: 78,
   action_item: {},
   type: "parent",
+  history: [
+    {
+      value: 50,
+      createdOn: helpers.getAbsoluteDate(),
+      createdBy: null,
+      lastUpdatedOn: helpers.getAbsoluteDate(),
+      lastUpdatedBy: null,
+    },
+  ],
 });
-
-// Metrics.getMetrics().then((data) => {
-//   // save(metric).then((res) => {
-//   //   console.log("Saved Data", res);
-//   // });
-//   // deleteMetric().then(() => {
-//   //   getMetrics().then((data) => {
-//   console.log("ALL DATA after Delete", data);
-//   //   });
-//   // });
-// });
-// setTimeout(() => {
-//   newMetric
-//     .save(metric)
-//     .then((data) => {
-//       console.log("data", data);
-//     })
-//     .catch((err) => {
-//       console.log("err", err);
-//     })
-//     .finally(() => {
-//       newMetric.getMetrics().then((data) => {
-//         console.log("All metrics", data);
-//       });
-//     });
-// }, 5000);
-
-// function deleteMet() {
-//   return new Promise((resolve, reject) => {
-//     buildfire.publicData.delete(
-//       "5f5d511072fd48066a24fd8a",
-//       "metrics",
-//       (err, data) => {
-//         if (err) reject(err);
-//         else resolve(data);
-//       }
-//     );
-//   });
-// }
-
-// deleteMet().then((data) => {
-//   console.log("DATA DELETED", data);
-// });
 
 MetricsDAO.getMetrics().then((data) => {
   // newMetric.update(metric, "value").then(() => {
