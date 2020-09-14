@@ -5,10 +5,10 @@ class Metric {
     this.icon = data.icon || "";
     this.min = data.min || 0;
     this.max = data.max || 0;
-    this.value = data.value || 0;
+    this.value = 0;
     this.actionItem = data.actionItem || {};
     this.type = data.type || "";
-    this.pointer = data.pointer || "metrics";
+    this.parent = data.parent || "";
     this.order = data.order || null;
     this.history = [
       {
@@ -45,7 +45,7 @@ class Metric {
     }
   }
 
-  addHistory(value) {
+  updateHistory(value) {
     const historyPointer = `${this.pointer}.${this.id}.history`;
     MetricsDAO.addMetricHistory(historyPointer, value)
       .then(() => {
@@ -58,30 +58,30 @@ class Metric {
   }
 }
 
-setTimeout(() => {
-  new Metric({
-    id: "5f5aa167ad0a6280de4773a7",
-    actionItem: {},
-    createdBy: null,
-    createdOn: "2020-09-10T21:57:59.951Z",
-    history: [
-      {
-        value: 50,
-        createdOn: null,
-        createdBy: null,
-        lastUpdatedOn: null,
-        lastUpdatedBy: null,
-      },
-    ],
-    icon: "metric1",
-    lastUpdatedBy: null,
-    lastUpdatedOn: "2020-09-10T21:57:59.951Z",
-    max: 0,
-    min: 100,
-    order: null,
-    pointer: "metrics",
-    title: "metric1",
-    type: "metric",
-    value: 50,
-  }).addHistory(20);
-}, 2000);
+// setTimeout(() => {
+//   new Metric({
+//     id: "5f5aa167ad0a6280de4773a7",
+//     actionItem: {},
+//     createdBy: null,
+//     createdOn: "2020-09-10T21:57:59.951Z",
+//     history: [
+//       {
+//         value: 50,
+//         createdOn: null,
+//         createdBy: null,
+//         lastUpdatedOn: null,
+//         lastUpdatedBy: null,
+//       },
+//     ],
+//     icon: "metric1",
+//     lastUpdatedBy: null,
+//     lastUpdatedOn: "2020-09-10T21:57:59.951Z",
+//     max: 0,
+//     min: 100,
+//     order: null,
+//     pointer: "metrics",
+//     title: "metric1",
+//     type: "metric",
+//     value: 50,
+//   }).addHistory(20);
+// }, 2000);

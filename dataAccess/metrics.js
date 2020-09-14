@@ -83,11 +83,10 @@ class MetricsDAO {
   static addMetricHistory(pointer, value) {
     const currentDate = helpers.getAbsoluteDate();
     return new Promise((resolve, reject) => {
-
-    console.log("pointer", pointer);
-    console.log("value", value);
-      resolve(true)
-    })
+      console.log("pointer", pointer);
+      console.log("value", value);
+      resolve(true);
+    });
   }
 }
 
@@ -118,5 +117,19 @@ MetricsDAO.getMetrics().then((data) => {
   //     console.log("ALL DATA after Delete", data);
   //   });
   // });
-  console.log("ALL DATA", data);
+  rep(data.data);
+  console.log("ALL DATA", data.data);
 });
+
+function rep(obj) {
+  for (var ob in obj.metrics) {
+    console.log("ob", ob);
+    obj.metrics[ob].parent = obj;
+    console.log(new Metric(obj.metrics[ob]));
+    // console.log("obj.metrics[ob]", obj.metrics[ob]);
+    if (obj.metrics[ob].metrics) {
+      //   console.log("obj.metrics[ob].metrics", obj.metrics[ob]);
+      rep(obj.metrics[ob]);
+    }
+  }
+}
